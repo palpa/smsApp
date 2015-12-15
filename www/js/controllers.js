@@ -1,16 +1,16 @@
 angular.module('starter.controllers', [])
 
-  .controller('DashCtrl', function ($ionicPlatform, $cordovaSms) {
+  .controller('DashCtrl', function ($ionicPlatform, $cordovaSms, $cordovaEmailComposer) {
     var vm = this;
     vm.send = function () {
       $ionicPlatform.ready(function () {
         console.log('$ionicPlatform.ready');
         var options = {
-            replaceLineBreaks: false, // true to replace \n by a new line, false by default
-            android: {
-                intent: 'INTENT'  // send SMS with the native android SMS messaging
-                //intent: '' // send SMS without open any other app
-            }
+          replaceLineBreaks: false, // true to replace \n by a new line, false by default
+          android: {
+            intent: 'INTENT'  // send SMS with the native android SMS messaging
+            //intent: '' // send SMS without open any other app
+          }
         };
         $cordovaSms
           .send('', 'SMS content', options)
@@ -23,6 +23,35 @@ angular.module('starter.controllers', [])
           });
       });
     }
+
+    vm.sendEmail = function () {
+      $cordovaEmailComposer.isAvailable().then(function () {
+        console.log('isAvailable');
+      }, function () {
+        console.error('not available');
+      });
+
+      var email = {
+        to: 'max@mustermann.de',
+        cc: 'erika@mustermann.de',
+        bcc: ['john@doe.com', 'jane@doe.com'],
+        attachments: [
+          'file://img/logo.png',
+          'res://icon.png',
+          'base64:icon.png//iVBORw0KGgoAAAANSUhEUg...',
+          'file://README.pdf'
+        ],
+        subject: 'Cordova Icons',
+        body: 'How are you? Nice greetings from Leipzig',
+        isHtml: true
+      };
+
+      $cordovaEmailComposer.open(email).then(null, function () {
+        console.log('user cancelled email');
+      });
+    }
+
+
   })
 
   .controller('ChatsCtrl', function ($scope, Chats) {
